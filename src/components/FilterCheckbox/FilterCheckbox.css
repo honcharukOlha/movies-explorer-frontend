@@ -1,0 +1,26 @@
+.checkbox {
+  position: relative;
+  width: 36px;
+  height: 20px;
+  background: #343434;
+  border-radius: 20px;
+  margin: 41px 0 70px auto;
+}
+
+.checkbox__label {
+  position: absolute;
+  box-sizing: border-box;
+  top: 1px;
+  right: 2px;
+  width: 18px;
+  height: 18px;
+  padding: 0;
+  background-color: #2be080;
+  border-radius: 50%;
+  z-index: 1;
+  border: 1px solid #ffffff;
+}
+
+.checkbox__input {
+  visibility: hidden;
+}

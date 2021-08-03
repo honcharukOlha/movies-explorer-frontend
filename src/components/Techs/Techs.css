@@ -1,0 +1,116 @@
+.techs {
+  display: flex;
+  max-width: 100%;
+  justify-content: space-between;
+  margin: 20px auto;
+  padding: 90px 70px;
+  flex-direction: column;
+  background: #272727;
+}
+
+.techs__title {
+  font-style: normal;
+  font-weight: normal;
+  font-size: 22px;
+  line-height: 27px;
+  letter-spacing: -0.04em;
+  padding-bottom: 23px;
+  border-bottom: 1px solid #dadada;
+}
+
+.techs__subtitle {
+  font-style: normal;
+  font-weight: normal;
+  font-size: 50px;
+  line-height: 58px;
+  text-align: center;
+  letter-spacing: -0.04em;
+  margin: 90px auto 26 px;
+  padding: 0;
+}
+
+.techs__description {
+  font-style: normal;
+  font-weight: normal;
+  font-size: 14px;
+  line-height: 20px;
+  text-align: center;
+  letter-spacing: -0.04em;
+  margin: 0 auto 100px;
+  padding: 0;
+}
+
+.techs__block {
+  display: grid;
+  grid-template-columns: repeat(7, 90px);
+  grid-gap: 10px;
+  margin: 0 auto;
+}
+
+.techs__item {
+  background: #303030;
+  border-radius: 10px;
+  padding: 21px 14px 22px;
+  font-family: Inter;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 14px;
+  line-height: 17px;
+  text-align: center;
+  letter-spacing: -0.04em;
+}
+
+@media screen and (max-width: 900px) {
+  .techs {
+    padding: 90px 50px;
+  }
+  .techs__subtitle {
+    margin: 80px auto 10px;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .techs__title {
+    font-size: 18px;
+    line-height: 22px;
+    padding-bottom: 28px;
+  }
+  .techs__block {
+    grid-template-columns: repeat(3, 84px);
+  }
+  .techs__subtitle {
+    padding: 60px 0 10px;
+    font-size: 30px;
+    line-height: 36px;
+  }
+  .techs__description {
+    font-size: 11px;
+    line-height: 16px;
+  }
+  .techs__item {
+    font-size: 12px;
+    line-height: 15px;
+  }
+}
+
+@media screen and (max-width: 600px) {
+  .techs {
+    margin: 20px auto;
+    padding: 70px 0;
+  }
+  .techs__subtitle {
+    margin: 60px auto 24px;
+  }
+  .techs__block {
+    grid-template-columns: repeat(2, 84px);
+  }
+  .techs__title {
+    margin: 0 14px 0;
+    border-bottom: 1px solid #000000;
+  }
+  .techs__description {
+    padding-left: 20px;
+    padding-right: 20px;
+    margin: 0 auto 50px;
+  }
+}
