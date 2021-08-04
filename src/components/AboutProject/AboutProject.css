@@ -73,6 +73,7 @@
 
 .progress__weeks:first-of-type {
   background: #3ddc84;
+  color: #000000;
 }
 
 .progress__name {

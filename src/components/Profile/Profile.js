@@ -1,9 +1,12 @@
 import './Profile.css';
 import {  Link } from 'react-router-dom';
+import Header from '../Header/Header';
 
-function Login() {
+function Profile() {
     return (
         <section className="profile">
+            <Header />
+            <div className="profile__block">
             <h2 className="profile__welcome">Привет, Ольга!</h2>
             <form className="profile__form" noValidate>
                 <div className="profile__nowrap">
@@ -48,8 +51,9 @@ function Login() {
                     </Link>
                 </p>
             </div>
+            </div>
         </section>
     )
 }
 
-export default Login;
+export default Profile;

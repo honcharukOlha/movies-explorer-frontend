@@ -6,6 +6,7 @@
   box-shadow: 0px 4px 30px rgba(0, 0, 0, 0.08);
   border-radius: 6px;
   padding: 0;
+  margin: 0 auto;
 }
 
 .movie__nowrap {
@@ -45,6 +46,10 @@
   margin: 18px auto;
 }
 
+.button_active {
+  background: #EE3465;
+}
+
 .button__text {
   font-style: normal;
   font-weight: normal;
@@ -55,6 +60,10 @@
   color: #ffffff;
   margin: 9px auto;
   padding: 0;
+}
+
+.button_active {
+  background: #EE3465;
 }
 
 @media screen and (max-width: 900px) {

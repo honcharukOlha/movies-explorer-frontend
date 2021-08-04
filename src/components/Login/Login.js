@@ -8,8 +8,8 @@ function Login() {
             <NavLink to="/" className="logo">
                 <img src={logo} alt="Логотип сайта"/>
             </NavLink>
-            <form className="form" noValidate>
             <h2 className="form__welcome">Рады видеть!</h2>
+            <form className="form" noValidate>
             <label className="form__label">E-mail</label>
             <input
                     required

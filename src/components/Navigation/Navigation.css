@@ -1,65 +1,76 @@
-.navigation {
-  position: relative;
-  width: 100%;
-}
-
-.navigation__menu {
+.header__menu {
   display: flex;
+  margin: 17px 0 28px auto;
+  align-items: baseline;
 }
 
-.navigation__block {
-  margin: 0 auto;
-}
-
-.navigation__text {
+.header__text {
+  display: flex;
   transition: opacity 0.5s linear 0.1s;
+  text-decoration: none;
+  color:#ffffff;
   padding: 0;
-  padding: 8px 20px;
-  font-family: Inter;
+  margin: 7px 0 0 20px;
   font-style: normal;
   font-weight: 500;
   font-size: 14px;
-  line-height: 18px;
+  line-height: 16px;
   text-align: right;
 }
 
-.navigation__link {
-  transition: opacity 0.5s linear 0.1s;
-  background-color: transparent;
-  border-radius: 4px;
-  color: #ffffff;
+.header__text_top {
+  padding-top: 14px;
+  margin-bottom: 0;
 }
 
-.navigation__close-button {
-  position: absolute;
-  top: 15px;
-  right: 15px;
-  width: 40px;
-  height: 43px;
-  background-image: url("../../images/icon__close.svg");
-  background-repeat: no-repeat;
+.header__text:first-of-type {
+  display: none;
+}
+
+.header__text:nth-child(4) {
+  margin-left: 50px;
+}
+
+.header__link {
+  transition: opacity 0.5s linear 0.1s;
+  background: #313131;
   background-position: center;
-  background-color: transparent;
-  border: none;
-  outline: none;
-  padding: 0;
-  transition: opacity 0.5s linear 0.1s;
+  background-repeat: no-repeat;
+  border-radius: 4px;
+  padding: 7px 8px;
+  margin: 0 0 0 17px;
+  color: #ffffff;
+  width: 26px;
+  height: 30px;
 }
 
-.navigation__close-button .navigation__link .navigation__button:hover {
+.header__link-image {
+  padding: 8px 7px;
+}
+
+.header__close-button {
+  display: none;
+}
+
+.header__profile {
+  display: flex;
+  flex-wrap: nowrap;
+}
+
+.header__close-button .header__link .header__button:hover {
   opacity: 0.6;
 }
 
 @media screen and (max-width: 768px) {
-  .navigation__popup {
+  .header__popup {
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     position: fixed;
     top: 0;
-    left: 0;
-    width: 100%;
+    right: 0;
+    max-width: 520px;
     height: 100%;
     background-color: #202020;
     transition: opacity 0.5s linear 0.1s;
@@ -67,13 +78,34 @@
     opacity: 0;
     z-index: 0;
   }
-  .navigation__popup_opened {
+  .header__popup_opened {
     display: flex;
     visibility: visible;
     opacity: 1;
     z-index: 3;
   }
-  .navigation__menu {
+  .header__text:first-of-type {
+    display: flex;
+  }
+
+  .header__close-button {
+    position: absolute;
+    color: #ffffff;
+    top: 15px;
+    right: 15px;
+    width: 22px;
+    height: 22px;
+    background-image: url("../../images/close.svg");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-color: transparent;
+    border: none;
+    outline: none;
+    padding: 0;
+    transition: opacity 0.5s linear 0.1s;
+  }
+
+  .header__menu {
     flex-direction: column;
     align-items: center;
     justify-content: space-between;
@@ -81,48 +113,57 @@
     height: 100%;
     margin: 0 0 0 auto;
   }
-  .navigation__block {
+  .header__block_navi {
     display: flex;
     flex-direction: column;
     align-items: center;
     margin-top: 160px;
   }
-  .navigation__text_active {
+  .header__text_line {
     padding-bottom: 4px;
     border-bottom: 2px solid #ffffff;
   }
-  .navigation__close-button {
+  .header__close-button {
     display: block;
     z-index: 2;
   }
-  .navigation__text {
+  .header__text {
     font-size: 18px;
     line-height: 22px;
     margin-bottom: 28px auto 0 0;
   }
-  .navigation__text_main {
+  .header__text_main {
     display: inline-block;
   }
-  .navigation__profile {
+  .header__profile {
     max-height: 30px;
     margin-bottom: 92px;
   }
-  .navigation__text_profile {
+  .header__text_profile {
     margin: 0;
   }
 }
 @media screen and (max-width: 600px) {
-  .navigation__menu {
+  .header__popup {
+    max-width: 400px;
+  }
+  .header__menu {
     width: 100%;
     margin: 0;
   }
-  .navigation__block {
+  .header__block {
     margin: 144px 0 0;
   }
-  .navigation__text {
+  .header__text {
     margin-bottom: 24px;
   }
-  .navigation__text_profile {
+  .header__text_profile {
     margin: 0;
+  }
+}
+
+@media screen and (max-width: 500px) {
+  .header__popup {
+    max-width: 320px;
   }
 }

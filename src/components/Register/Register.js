@@ -6,9 +6,9 @@ function Register() {
     return (
       <section className="register">
         <NavLink to="/" className="logo">
-            <img src={logo} alt="Логотип сайта"/>
+            <img src={logo} alt="Логотип сайта"/> 
         </NavLink>
-        <h2 className="register__welcome">Добро пожаловать!</h2>
+        <h2 className="form__welcome">Добро пожаловать!</h2>
         <form className="form">
           <label className="form__label">Имя</label>
           <input className="form__input" 
