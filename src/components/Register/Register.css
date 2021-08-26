@@ -52,6 +52,14 @@
   padding: 15px;
 }
 
+.form__error {
+  font-style: normal;
+  font-weight: normal;
+  font-size: 10px;
+  line-height: 12px;
+  color: #ee3465;
+}
+
 .form__button-container {
   margin: 69px auto 16px;
   width: 100%;
@@ -60,6 +68,23 @@
 .form__button {
   width: 100%;
   background: #4285f4;
+  border-radius: 3px;
+  font-family: Inter;
+  font-style: normal;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 17px;
+  text-align: center;
+  margin: 0;
+  padding-top: 13px;
+  padding-bottom: 15px;
+  color: #ffffff;
+}
+
+.form__button_disabled {
+  width: 100%;
+  background: #000000;
+  border: none;
   border-radius: 3px;
   font-family: Inter;
   font-style: normal;

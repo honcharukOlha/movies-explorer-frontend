@@ -11,13 +11,20 @@
 .search__form {
   display: flex;
   justify-content: space-between;
+  flex-direction: column;
   width: calc(100% - 20px * 2);
+}
+
+.search__wrap {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
   background: #2f2f2f;
   border-radius: 40px;
 }
 
 .search__input:focus {
-  border: 1px solid #4285F4;
+  border: 1px solid #4285f4;
   border-radius: 40px;
 }
 
@@ -36,6 +43,10 @@
   background-color: transparent;
   border: none;
   outline: none;
+}
+
+.form__error_search {
+  padding: 10px;
 }
 
 .search__button {

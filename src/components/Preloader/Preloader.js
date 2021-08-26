@@ -1,13 +1,14 @@
-import './Preloader.css'
+import './Preloader.css';
+import React from 'react';
 
-function Preloader() {
-    return (
-        <div className="preloader">
-            <div className="preloader__block">
-                <span className="preloader__loading"></span>
-            </div>
-        </div>
-    )
-};
+function Preloader({ isLoading }) {
+  return (
+    <div className={`preloader ${isLoading ? 'preloader_active' : ''}`}>
+      <div className="preloader__block">
+        <span className="preloader__loading"></span>
+      </div>
+    </div>
+  );
+}
 
-export default Preloader
+export default Preloader;
