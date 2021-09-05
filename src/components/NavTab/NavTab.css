@@ -1,0 +1,49 @@
+.navtab {
+  display: flex;
+  justify-content: center;
+  list-style: none;
+  max-width: 100%;
+  padding: 0;
+}
+
+.navtab__item {
+  background: #303030;
+  border-radius: 10px;
+  margin: 0 10px 30px 0;
+  padding: 10px 23px;
+  transition: opacity 0.5s linear 0.1s;
+}
+
+.navtab__text {
+  text-decoration: none;
+  font-style: normal;
+  font-weight: 500;
+  font-size: 12px;
+  line-height: 16px;
+  filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25)),
+    drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25));
+  color: #fff;
+  padding: 0;
+  margin: 0;
+}
+
+.navtab__item:hover {
+  opacity: 0.6;
+}
+
+@media screen and (max-width: 900px) {
+  .navtab__item {
+    padding: 5px 12px;
+  }
+}
+
+@media screen and (max-width: 600px) {
+  .navtab__item {
+    margin: 0 6px 0 0;
+    padding: 5px 15px;
+  }
+  .navtab__text {
+    font-size: 10px;
+    line-height: 16px;
+  }
+}

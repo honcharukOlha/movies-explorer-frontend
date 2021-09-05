@@ -1,0 +1,41 @@
+.error {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  margin: 246px auto 60px;
+}
+
+.error__title {
+  font-style: normal;
+  font-weight: normal;
+  font-size: 140px;
+  line-height: 169px;
+  text-align: center;
+  margin: 0;
+  padding: 0;
+}
+
+.error__subtitle {
+  font-style: normal;
+  font-weight: normal;
+  font-size: 16px;
+  line-height: 19px;
+  text-align: center;
+  margin: 5px auto 184px;
+}
+
+.error__button {
+  font-style: normal;
+  font-weight: normal;
+  font-size: 14px;
+  line-height: 17px;
+  text-align: center;
+  color: #4285f4;
+  transition: opacity 0.5s linear 0.1s;
+}
+
+.error__button:hover {
+  opacity: 0, 6;
+}

@@ -1,0 +1,25 @@
+.root {
+  width: 100%;
+  background: #202020;
+}
+
+.page {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  min-width: 320px;
+  font-family: "Inter", Arial, Helvetica, sans-serif;
+  color: white;
+  background: #202020;
+  font-size: 100%;
+  margin: 0 auto;
+  overflow-x: hidden;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased;
+  -webkit-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%;
+  -moz-text-size-adjust: 100%;
+  text-rendering: optimizeLegibility;
+}
