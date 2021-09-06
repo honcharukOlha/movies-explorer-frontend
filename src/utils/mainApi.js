@@ -10,6 +10,7 @@ export class MainApi {
 
   getUserInfo() {
     return fetch(`${this._baseUrl}/users/me`, {
+      mode: 'no-cors',
       headers: this._headers,
       credentials: 'include',
     }).then(this._handleResult);
@@ -17,6 +18,7 @@ export class MainApi {
 
   editUserInfo(name, email) {
     return fetch(`${this._baseUrl}/users/me`, {
+      mode: 'no-cors',
       method: 'PATCH',
       headers: this._headers,
       credentials: 'include',
@@ -26,6 +28,7 @@ export class MainApi {
 
   createMovies({ country, director, duration, year, description, image, trailer, thumbnail, nameRU, nameEN, movieId }) {
     return fetch(`${this._baseUrl}/movies`, {
+      mode: 'no-cors',
       method: 'POST',
       credentials: 'include',
       headers: this._headers,
@@ -47,6 +50,7 @@ export class MainApi {
 
   getMovies() {
     return fetch(`${this._baseUrl}/movies`, {
+      mode: 'no-cors',
       headers: this._headers,
       credentials: 'include',
     }).then(this._handleResult);
@@ -54,6 +58,7 @@ export class MainApi {
 
   deleteMovie(movieId) {
     return fetch(`${this._baseUrl}/movies/${movieId}`, {
+      mode: 'no-cors',
       method: 'DELETE',
       headers: this._headers,
       credentials: 'include',
