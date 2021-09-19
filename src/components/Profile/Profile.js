@@ -3,12 +3,10 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import Header from '../Header/Header';
 import { CurrentUserContext } from '../../contexts/CurrentUserContext';
-import { useFormWithValidation } from '../../utils/useFormValidation';
 
 function Profile(props) {
-  const { onSignOut, onUpdateUser, loggedIn } = props;
+  const { onSignOut, onUpdateUser, loggedIn, errors, values, isValid, handleChange, resetForm } = props;
   const currentUser = React.useContext(CurrentUserContext);
-  const { errors, values, isValid, handleChange, resetForm } = useFormWithValidation();
 
   React.useEffect(() => {
     resetForm();
@@ -54,12 +52,8 @@ function Profile(props) {
               {errors.email || ''}
             </span>
           </div>
+          <button className="profile__button">{isValid ? 'Сохранить' : 'Редактировать'}</button>
         </form>
-        <div className="profile__button-container">
-          <button type="button" className="profile__button">
-            {isValid ? 'Сохранить' : 'Редактировать'}
-          </button>
-        </div>
         <div className="profile__links">
           <p>
             <Link to="/" className="profile__link" onClick={onSignOut}>

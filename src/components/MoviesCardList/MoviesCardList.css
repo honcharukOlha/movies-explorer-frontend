@@ -10,7 +10,7 @@
 .movies__list {
   display: grid;
   justify-content: center;
-  width: 100%;
+  width: 100%; 
   grid-template-columns: repeat(auto-fit, 270px);
   grid-template-rows: repeat(auto-fit, 320px);
   grid-gap: 20px;
@@ -36,6 +36,10 @@
   border: 1px solid #424242;
   transition: opacity 0.5s linear 0.1s;
   border-radius: 5px;
+}
+
+.movies__more_disable {
+  display: none;
 }
 
 .movies__more-button {

@@ -1,6 +1,6 @@
 import './App.css';
 import React from 'react';
-import { Route, Switch, useHistory, Redirect } from 'react-router-dom';
+import { Route, Switch, useHistory, Redirect, useLocation } from 'react-router-dom';
 import Main from '../Main/Main';
 import Movies from '../Movies/Movies';
 import SavedMovies from '../SavedMovies/SavedMovies';
@@ -10,7 +10,6 @@ import Login from '../Login/Login';
 import * as auth from '../../utils/auth';
 import api from '../../utils/mainApi';
 import moviesApi from '../../utils/MoviesApi';
-import Preloader from '../Preloader/Preloader';
 import { CurrentUserContext } from '../../contexts/CurrentUserContext.js';
 import ErrorNotFound from '../ErrorNotFound/ErrorNotFound';
 import ProtectedRoute from '../ProtectedRoute/ProtectedRoute';
@@ -20,9 +19,9 @@ const MOVIE_IMG_URL = 'https://api.nomoreparties.co';
 function App() {
   const [loggedIn, setLoggedIn] = React.useState(false);
   const history = useHistory();
+  const location = useLocation();
   const [currentUser, setCurrentUser] = React.useState({});
   const [isLoading, setIsLoading] = React.useState(false);
-  const [allBeatMovies, setAllBeatMovies] = React.useState([]);
   const [beatMoviesFiltered, setBeatMoviesFiltered] = React.useState([]);
   const [savedMovies, setSavedMovies] = React.useState([]);
   const [savedMoviesFiltered, setSavedMoviesFiltered] = React.useState([]);
@@ -30,22 +29,27 @@ function App() {
   const [shortMovieToggleSaved, setShortMovieToggleSaved] = React.useState(false);
   const [errorMessage, setErrorMessage] = React.useState(false);
   const [serverError, setServerError] = React.useState('');
-  const [moviesLength, setMoviesLength] = React.useState(0);
-  const [listLength, setListLength] = React.useState(0);
+  const [moviesColumnsCount, setMoviesColumnsCount] = React.useState(0);
+  const [initialMoviesListLength, setInitialMoviesListLength] = React.useState(0);
+  const [moviesListLength, setMoviesListLength] = React.useState(0);
   const { isValid, values, errors, setErrors, setValues, handleChange, resetForm } = useFormWithValidation();
+  const [allBeatMovies, setAllBeatMovies] = React.useState([]);
+  const [lastSearchedBeatMovies, setLastSearchedBeatMovies] = React.useState([]);
+  const [lastSearchedSavedMovies, setLastSearchedSavedMovies] = React.useState([]);
 
   // инициализация
   React.useEffect(async () => {
+    if (!loggedIn) return;
     setBeatMoviesFiltered(JSON.parse(localStorage.getItem('filtered')) ?? []);
     try {
       setIsLoading(true);
       const cachedBeatMovies = JSON.parse(localStorage.getItem('filtered')) ?? [];
       const allSavedMovies = await api.getMovies();
-      const allBeatMovies = await moviesApi.getMovies();
       cachedBeatMovies.forEach((item) => (item.isLiked = allSavedMovies.some((i) => i.movieId === item.id)));
+      setLastSearchedBeatMovies(cachedBeatMovies);
       setBeatMoviesFiltered(cachedBeatMovies);
-      setAllBeatMovies(allBeatMovies);
       setSavedMovies(allSavedMovies);
+      setLastSearchedSavedMovies(allSavedMovies);
       setSavedMoviesFiltered(allSavedMovies);
     } catch (error) {
       console.log(error);
@@ -56,7 +60,6 @@ function App() {
 
   // слушатель изменения размеров окна
   React.useEffect(() => {
-    defineListMoviesLength();
     window.addEventListener('resize', defineListMoviesLength);
     window.addEventListener('hashchange', resetForm);
     return () => {
@@ -65,17 +68,20 @@ function App() {
     };
   });
 
+  // начальная настройка параметров окна
+  React.useEffect(() => {
+    defineListMoviesLength();
+  }, []);
+
   // производим регистрацию
   function handleRegister({ name, email, password }) {
     return auth
       .register(name, email, password)
       .then((res) => {
-        console.log(res);
         if (!res || res.statusCode === 400) {
           console.log('Что-то пошло не так');
         } else {
-          setLoggedIn(true);
-          history.push('/signin');
+          handleLogin({ email, password });
           return res;
         }
       })
@@ -109,19 +115,18 @@ function App() {
     if (token) {
       auth
         .checkToken(token)
-
         .then((res) => {
           if (res) {
             setCurrentUser(res);
             setLoggedIn(true);
-            history.push('/movies');
+            history.push(location);
           }
         })
         .catch((err) => console.log(err));
     } else {
       setLoggedIn(false);
-      localStorage.removeItem('jwt');
-      history.push('/sign-in');
+      localStorage.removeItem('token');
+      history.push('/signin');
     }
   }, [history]);
 
@@ -165,35 +170,63 @@ function App() {
   async function handleSearchForm(e) {
     e.preventDefault();
     if (isValid === true) {
-      const filteredMovies = filterMovies(allBeatMovies, shortMovieToggle, values.search.toLowerCase());
+      let moviesArray = allBeatMovies;
+      if (allBeatMovies.length === 0) {
+        moviesArray = await loadBeatMovies();
+      }
+      setShortMovieToggle(false);
+      const filteredMovies = filterMovies(moviesArray, null, values?.search?.toLowerCase());
       filteredMovies.forEach((item) => (item.isLiked = savedMovies.some((i) => i.movieId === item.id)));
+      // откатываем пагинацию
+      setMoviesListLength(initialMoviesListLength);
       setBeatMoviesFiltered(filteredMovies);
+      setLastSearchedBeatMovies(filteredMovies);
       localStorage.setItem('filtered', JSON.stringify(filteredMovies));
     } else {
       setErrors({ search: 'Нужно ввести ключевое слово' });
     }
   }
 
+  async function loadBeatMovies() {
+    try {
+      setIsLoading(true);
+      const result = await moviesApi.getMovies();
+      setAllBeatMovies(result);
+      return result;
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
   // поиск по сохраненным фильмам
-  async function handleSavedSearch(e) {
+  function handleSavedSearch(e) {
     e.preventDefault();
     if (isValid === true) {
-      const filteredMovies = filterMovies(savedMovies, shortMovieToggleSaved, values.search.toLowerCase());
-      console.log(`filtered movies ${JSON.stringify(filteredMovies)}`);
+      setShortMovieToggleSaved(false);
+      const filteredMovies = filterMovies(savedMovies, null, values?.search?.toLowerCase());
       setSavedMoviesFiltered(filteredMovies);
+      setLastSearchedSavedMovies(filteredMovies);
     } else {
       setErrors({ search: 'Нужно ввести ключевое слово' });
     }
   }
 
   // перключаемся на короткометражки в общей вкладке
-  function handleSwitchShortMovies() {
-    setShortMovieToggle(!shortMovieToggle);
+  async function handleSwitchShortMovies() {
+    const newToggleValue = !shortMovieToggle;
+    setShortMovieToggle(newToggleValue);
+    const filteredMovies = filterMovies(lastSearchedBeatMovies, newToggleValue, null);
+    setBeatMoviesFiltered(filteredMovies);
   }
 
   // перключаемся на короткометражки в saved movies
   function handleSavedSwitchShortMovies() {
-    setShortMovieToggleSaved(!shortMovieToggleSaved);
+    const newToggleValue = !shortMovieToggleSaved;
+    setShortMovieToggleSaved(newToggleValue);
+    const filteredMovies = filterMovies(lastSearchedSavedMovies, newToggleValue, null);
+    setSavedMoviesFiltered(filteredMovies);
   }
 
   // фильтрация фильмов
@@ -216,14 +249,17 @@ function App() {
       const savedMovie = savedMovies.find((i) => i.movieId === movie.id);
       if (savedMovie) {
         await api.deleteMovie(savedMovie._id);
-        setSavedMovies(savedMovies.filter((item) => item._id !== savedMovie._id));
-        setSavedMoviesFiltered(savedMoviesFiltered.filter((item) => item._id !== savedMovie._id));
-        const filteredMovies = beatMoviesFiltered.map((item) => {
+        const savedMoviesPredicate = (item) => item._id !== savedMovie._id;
+        const beatMoviesMapper = (item) => {
           if (item.id === savedMovie.movieId) {
             item.isLiked = false;
           }
           return item;
-        });
+        };
+        setSavedMovies(savedMovies.filter(savedMoviesPredicate));
+        setSavedMoviesFiltered(savedMoviesFiltered.filter(savedMoviesPredicate));
+        setLastSearchedSavedMovies(lastSearchedSavedMovies.filter(savedMoviesPredicate));
+        const filteredMovies = beatMoviesFiltered.map(beatMoviesMapper);
         setBeatMoviesFiltered(filteredMovies);
       } else {
         const newItem = await api.createMovies({
@@ -239,18 +275,17 @@ function App() {
           thumbnail: movie.image.formats.thumbnail.url ? `${MOVIE_IMG_URL}${movie.image.formats.thumbnail.url}` : '',
           movieId: movie.id,
         });
+        const beatMoviesMapper = (item) => {
+          if (item.id === movie.id) {
+            item.isLiked = true;
+          }
+          return item;
+        };
         setSavedMovies(savedMovies.concat([newItem]));
         setSavedMoviesFiltered(savedMoviesFiltered.concat([newItem]));
-        setBeatMoviesFiltered(
-          beatMoviesFiltered.map((item) => {
-            if (item.id === movie.id) {
-              item.isLiked = true;
-            }
-            return item;
-          })
-        );
+        setLastSearchedBeatMovies(lastSearchedBeatMovies.map(beatMoviesMapper));
+        setBeatMoviesFiltered(beatMoviesFiltered.map(beatMoviesMapper));
       }
-      localStorage.setItem('filtered', JSON.stringify(beatMoviesFiltered));
     } catch (error) {
       console.log(error);
     }
@@ -259,16 +294,18 @@ function App() {
   async function handleDeleteMovie(movie) {
     try {
       await api.deleteMovie(movie._id);
-      setSavedMovies(savedMovies.filter((item) => item._id !== movie._id));
-      setSavedMoviesFiltered(savedMoviesFiltered.filter((item) => item._id !== movie._id));
-      setBeatMoviesFiltered(
-        beatMoviesFiltered.map((item) => {
-          if (item.id === movie.movieId) {
-            item.isLiked = false;
-          }
-          return item;
-        })
-      );
+      const savedMoviesPredicate = (item) => item._id !== movie._id;
+      setSavedMovies(savedMovies.filter(savedMoviesPredicate));
+      setSavedMoviesFiltered(savedMoviesFiltered.filter(savedMoviesPredicate));
+      setLastSearchedSavedMovies(lastSearchedSavedMovies.filter(savedMoviesPredicate));
+      const beatMoviesMapper = (item) => {
+        if (item.id === movie.movieId) {
+          item.isLiked = false;
+        }
+        return item;
+      };
+      setBeatMoviesFiltered(beatMoviesFiltered.map(beatMoviesMapper));
+      setLastSearchedBeatMovies(lastSearchedBeatMovies.map(beatMoviesMapper));
     } catch (error) {
       console.log(error);
     }
@@ -276,119 +313,121 @@ function App() {
 
   // отрисовываем карточки с фильмами
   function defineListMoviesLength() {
-    const screenWith = window.screen.availWidth;
+    const screenWith = window.innerWidth;
+    let columnsCount = 0;
+    let initialItemsCount = 0;
     if (screenWith >= 1280) {
-      setMoviesLength(4);
-      setListLength(12);
-    } else if (screenWith >= 768 && screenWith <= 1279) {
-      setMoviesLength(2);
-      setListLength(8);
-    } else if (screenWith <= 320 && screenWith <= 767) {
-      setMoviesLength(2);
-      setListLength(5);
+      columnsCount = 4;
+      initialItemsCount = 12;
+    } else if (screenWith >= 480 && screenWith <= 1279) {
+      columnsCount = 2;
+      initialItemsCount = 8;
+    } else if (screenWith >= 320 && screenWith <= 479) {
+      columnsCount = 1;
+      initialItemsCount = 5;
+    }
+    setMoviesColumnsCount(columnsCount);
+    setInitialMoviesListLength(initialItemsCount);
+    // если еще не была задана длинна списка - простовляем ее равной начальной длинее (до нажатия кнопки еще)
+    if (moviesListLength === 0) {
+      setMoviesListLength(initialItemsCount);
     }
   }
 
   // работа кнопки "Ещё"
   function addMoreMovies() {
-    setListLength(listLength + moviesLength);
+    let listIncrement = moviesColumnsCount;
+    if (moviesColumnsCount === 1) {
+      listIncrement = 2;
+    }
+    setMoviesListLength(moviesListLength + listIncrement);
   }
 
   return (
     <CurrentUserContext.Provider value={currentUser}>
       <div className="page">
-        {isLoading ? (
-          <Preloader />
-        ) : (
-          <Switch>
-            <Route exact path="/">
-              <Main loggedIn={loggedIn} />
-            </Route>
-
-            <ProtectedRoute
-              path="/movies"
-              component={Movies}
-              loggedIn={loggedIn}
-              isLoading={isLoading}
-              handleSearchForm={handleSearchForm}
-              handleSaveMovie={handleSaveMovie}
-              movies={beatMoviesFiltered}
+        <Switch>
+          <Route exact path="/">
+            <Main loggedIn={loggedIn} />
+          </Route>
+          <ProtectedRoute
+            path="/movies"
+            component={Movies}
+            loggedIn={loggedIn}
+            isLoading={isLoading}
+            handleSearchForm={handleSearchForm}
+            handleSaveMovie={handleSaveMovie}
+            movies={beatMoviesFiltered}
+            isValid={isValid}
+            checked={shortMovieToggle}
+            handleChange={handleChange}
+            addMoreMovies={addMoreMovies}
+            listLength={moviesListLength}
+            defineListMoviesLength={defineListMoviesLength}
+            handleSwitchShortMovies={handleSwitchShortMovies}
+            errors={errors}
+            serverError={serverError}
+          />
+          <ProtectedRoute
+            path="/saved-movies"
+            component={SavedMovies}
+            loggedIn={loggedIn}
+            isLoading={isLoading}
+            handleChange={handleChange}
+            savedMovies={savedMoviesFiltered}
+            checked={shortMovieToggleSaved}
+            handleDeleteMovie={handleDeleteMovie}
+            listLength={moviesListLength}
+            defineListMoviesLength={defineListMoviesLength}
+            handleSavedSwitchShortMovies={handleSavedSwitchShortMovies}
+            handleSavedSearch={handleSavedSearch}
+            errors={errors}
+            serverError={serverError}
+            isValid={isValid}
+          />
+          <ProtectedRoute
+            path="/profile"
+            component={Profile}
+            loggedIn={loggedIn}
+            handleChange={handleChange}
+            onSignOut={handleSignOut}
+            onUpdateUser={handleUpdateUser}
+            errors={errors}
+            isValid={isValid}
+            values={values}
+            resetForm={resetForm}
+            serverError={serverError}
+          />
+          <Route path="/signin">
+            <Login
+              onLogin={handleLogin}
+              tokenCheck={handleTokenCheck}
               isValid={isValid}
-              checked={shortMovieToggle}
-              handleChange={handleChange}
-              addMoreMovies={addMoreMovies}
-              listLength={listLength}
-              defineListMoviesLength={defineListMoviesLength}
-              handleSwitchShortMovies={handleSwitchShortMovies}
+              loggedIn={loggedIn}
               errors={errors}
+              errorMessage={errorMessage}
               serverError={serverError}
             />
-
-            <ProtectedRoute
-              path="/saved-movies"
-              component={SavedMovies}
-              loggedIn={loggedIn}
-              isLoading={isLoading}
+          </Route>
+          <Route path="/signup">
+            <Register
+              onRegister={handleRegister}
               handleChange={handleChange}
-              savedMovies={savedMoviesFiltered}
-              checked={shortMovieToggleSaved}
-              handleDeleteMovie={handleDeleteMovie}
-              listLength={listLength}
-              defineListMoviesLength={defineListMoviesLength}
-              handleSavedSwitchShortMovies={handleSavedSwitchShortMovies}
-              handleSavedSearch={handleSavedSearch}
-              errors={errors}
-              serverError={serverError}
               isValid={isValid}
-            />
-
-            <ProtectedRoute
-              path="/profile"
-              component={Profile}
               loggedIn={loggedIn}
-              handleChange={handleChange}
-              onSignOut={handleSignOut}
-              onUpdateUser={handleUpdateUser}
               errors={errors}
-              isValid={isValid}
+              errorMessage={errorMessage}
               serverError={serverError}
             />
+          </Route>
+          <Route exact path="/">
+            {loggedIn ? <Redirect to="/movies" /> : <Redirect to="/" />}
+          </Route>
 
-            <Route path="/signin">
-              <Login
-                onLogin={handleLogin}
-                tokenCheck={handleTokenCheck}
-                isValid={isValid}
-                loggedIn={loggedIn}
-                errors={errors}
-                errorMessage={errorMessage}
-                serverError={serverError}
-              />
-            </Route>
-
-            <Route path="/signup">
-              <Register
-                onRegister={handleRegister}
-                handleChange={handleChange}
-                isValid={isValid}
-                loggedIn={loggedIn}
-                errors={errors}
-                errorMessage={errorMessage}
-                serverError={serverError}
-              />
-            </Route>
-
-            <Route>{loggedIn ? <Redirect to="/movies" /> : <Redirect to="/" />}</Route>
-
-            <Route exact path="/404">
-              <ErrorNotFound />
-            </Route>
-
-            <Route path="*">
-              <Redirect to="/404" />
-            </Route>
-          </Switch>
-        )}
+          <Route>
+            <ErrorNotFound />
+          </Route>
+        </Switch>
       </div>
     </CurrentUserContext.Provider>
   );

@@ -15,7 +15,7 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  margin-bottom: 100px;
+  margin-bottom: 10px;
 }
 
 .profile__welcome {
@@ -50,10 +50,7 @@
   background-color: transparent;
 }
 
-.profile__button-container {
-  margin: 69px auto 0;
-  width: 100%;
-}
+
 .profile__input {
   text-align: right;
   border: none;
@@ -66,7 +63,7 @@
   font-weight: 500;
   font-size: 14px;
   line-height: 17px;
-  margin: 0;
+   margin: 169px auto 0;
   padding-top: 0;
   padding-bottom: 0;
   color: #ffffff;
