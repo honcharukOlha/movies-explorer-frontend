@@ -1,82 +1,80 @@
-export const BASE_URL = 'https://super-movies.nomoredomains.club';
+// export const BASE_URL = 'http://localhost:3000/api';
+// export const BASE_URL = 'https://super-movies.nomoredomains.club';
 
 export class MainApi {
-    constructor(options) {
-        this.baseUrl = options.baseUrl;
-        this.headers = options.headers;
+  constructor(options) {
+    this._options = options;
+    this._baseUrl = options.baseUrl;
+    this._headers = options.headers;
+  }
+
+  getUserInfo() {
+    return fetch(`${this._baseUrl}/users/me`, {
+      headers: this._headers,
+      credentials: 'include',
+    }).then(this._handleResult);
+  }
+
+  editUserInfo(name, email) {
+    return fetch(`${this._baseUrl}/users/me`, {
+      method: 'PATCH',
+      headers: this._headers,
+      credentials: 'include',
+      body: JSON.stringify({ name, email }),
+    }).then(this._handleResult);
+  }
+
+  createMovies({ country, director, duration, year, description, image, trailer, thumbnail, nameRU, nameEN, movieId }) {
+    return fetch(`${this._baseUrl}/movies`, {
+      method: 'POST',
+      credentials: 'include',
+      headers: this._headers,
+      body: JSON.stringify({
+        country,
+        director,
+        duration,
+        year,
+        description,
+        image,
+        trailer,
+        thumbnail,
+        nameRU,
+        nameEN,
+        movieId,
+      }),
+    }).then(this._handleResult);
+  }
+
+  getMovies() {
+    return fetch(`${this._baseUrl}/movies`, {
+      headers: this._headers,
+      credentials: 'include',
+    }).then(this._handleResult);
+  }
+
+  deleteMovie(movieId) {
+    return fetch(`${this._baseUrl}/movies/${movieId}`, {
+      method: 'DELETE',
+      headers: this._headers,
+      credentials: 'include',
+    }).then(this._handleResult);
+  }
+
+  _handleResult(res) {
+    if (res.ok) {
+      return res.json();
     }
-
-    _handleResult(res) {
-        if (res.ok) {
-            return res.json();
-        }
-        return Promise.reject(`Ошибка: ${res.status}`);
-    }
-
-      getUserInfo() {
-        return fetch(`${this._baseUrl}/users/me`, {
-          headers: {
-            authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        }).then(this._handleResult);
-      }  
-
-      editUserInfo(data) {
-        return fetch(`${this._baseUrl}/users/me`, {
-          method: "PATCH",
-          headers: {
-            authorization: `Bearer ${localStorage.getItem("token")}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            email: data.email,
-            name: data.name,
-          }),
-        }).then(this._handleResult);
-      } 
-
-      getMovies() {
-        return fetch(`${this._baseUrl}/movies`, {
-          headers: {
-            authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        }).then(this._handleResult);
-      }
-
-      getSavedMovies() {
-        return fetch(`${this._baseUrl}/saved-movies`, {
-          headers: {
-            authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        }).then(this._handleResult);
-      }
-
-      saveMovie(movieData) {
-        return fetch(`${this._baseUrl}/movies`, {
-          method: "POST",
-          headers: {
-            authorization: `Bearer ${localStorage.getItem("token")}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(movieData),
-        }).then(this._handleResult);
-      }
-      
-      deleteMovie(movieId) {
-        return fetch(`${this._baseUrl}/movies/${movieId}`, {
-          method: "DELETE",
-          headers: {
-            authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        }).then(this._handleResult);
-      }
+    return Promise.reject(`Ошибка: ${res.status}`);
+  }
 }
 
 const api = new MainApi({
-    baseUrl: BASE_URL,
-    headers: {
-        "Content-Type": "application/json",
-    },
+  baseUrl: 'https://super-movies.nomoredomains.club',
+  headers: {
+    authorization: `Bearer ${localStorage.getItem('token')}`,
+    'Content-Type': 'application/json',
+    Accept: 'application/json',
+  },
 });
 
 export default api;

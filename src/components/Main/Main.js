@@ -7,26 +7,24 @@ import Portfolio from '../Portfolio/Portfolio';
 import Header from '../Header/Header';
 import Footer from '../Footer/Footer';
 
-function Main() {
-  return(
+function Main({ loggedIn }) {
+  return (
     <main className="content">
+      <Header loggedIn={loggedIn} />
 
-    <Header/>
+      <Promo />
 
-    <Promo />
+      <AboutProject />
 
-    <AboutProject />
+      <Techs />
 
-    <Techs/>
+      <AboutMe />
 
-    <AboutMe/>
+      <Portfolio />
 
-    <Portfolio />
-
-    <Footer />
-    
-  </main>
-  )
+      <Footer />
+    </main>
+  );
 }
 
 export default Main;

@@ -1,0 +1,15 @@
+.header__burger-button {
+  display: none;
+}
+
+@media screen and (max-width: 768px) {
+  .header__burger-button {
+    display: flex;
+    background-image: url(../../images/burger.svg);
+    width: 44px;
+    height: 44px;
+    border: none;
+    outline: none;
+    background-color: transparent;
+  }
+}

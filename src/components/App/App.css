@@ -1,5 +1,4 @@
-.root {
-  width: 100%;
+body {
   background: #202020;
 }
 
@@ -10,7 +9,8 @@
   align-items: center;
   width: 100%;
   min-width: 320px;
-  font-family: "Inter", Arial, Helvetica, sans-serif;
+  height: 100%;
+  font-family: 'Inter', Arial, Helvetica, sans-serif;
   color: white;
   background: #202020;
   font-size: 100%;
